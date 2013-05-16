@@ -18,7 +18,12 @@ public class QueryManager {
         this.dbmanager = dbmanager;
     }
 
-    public Product getProduct(int productId) {
+	/**
+	 * Selects a Product from the product table.
+	 * @param int productId
+	 * @return Product()
+	 */
+    public Product getProductById(int productId) {
         Product product = new Product();
         try {
             String sql = "SELECT * FROM product WHERE product_id='" + productId + "'";
@@ -38,6 +43,10 @@ public class QueryManager {
         return product;
     }
 
+	/**
+	 * Selects all products from the product table
+	 * @return ArrayList product
+	 */
     public List<Product> getProducts() {
         List<Product> products = new ArrayList<Product>();
         try {
@@ -57,6 +66,13 @@ public class QueryManager {
         }
         return products;
     }
+	
+	/**
+	 * Selects all products from the product table matching the 
+	 * specified ProductCategory
+	 * @param categoryId
+	 * @return ArrayList product
+	 */
 	public List<Product> getProductsByCategoryId(int categoryId) {
         List<Product> products = new ArrayList<Product>();
         try {
@@ -78,6 +94,10 @@ public class QueryManager {
         return products;
     }	
 	
+	/**
+	 * Inserts a product into the product table
+	 * @param product 
+	 */
 	public void setProduct(Product product) {
 		try{
 			String sql = "INSERT INTO product (name, productcategory_id, price, tax) VALUES("+
@@ -92,6 +112,10 @@ public class QueryManager {
         }
 	}
 	
+	/**
+	 * Updates a product in the product table
+	 * @param product 
+	 */
 	public void updateProduct(Product product) {
 		try{
 			String sql = "UPDATE product SET "+
@@ -107,33 +131,45 @@ public class QueryManager {
             e.printStackTrace(System.err);
         }
 	}
-	public List<ProductCategory> getCategories(){
-		List<ProductCategory> categories = new ArrayList();
+	
+	/**
+	 * Selects all ProductCategories from the productcategory table.
+	 * @return 
+	 */
+	public List<ProductCategory> getProductCategories(){
+		List<ProductCategory> productCategories = new ArrayList();
 		
 		try {
             String sql = "SELECT * FROM productcategory ORDER BY name ASC";
             ResultSet result = dbmanager.doQuery(sql);
             while (result.next()) {
-                ProductCategory category = new ProductCategory(
+                ProductCategory productCategory = new ProductCategory(
 						result.getInt("productcategory_id"),
                         result.getString("name"),
 						result.getBoolean("isdeleted"));
-                categories.add(category);
+                productCategories.add(productCategory);
             }
         } catch (SQLException e) {
             System.err.println(DbManager.SQL_EXCEPTION + e.getMessage());
             e.printStackTrace(System.err);
         }
 		
-		return categories;
+		return productCategories;
 	}
-	public ProductCategory getCategoryByName(String name){
-		ProductCategory category = new ProductCategory();
+	
+	/**
+	 * Selects a ProductCategory from the productcategory table
+	 * matching the provided name.
+	 * @param name
+	 * @return 
+	 */
+	public ProductCategory getProductCategoryByName(String name){
+		ProductCategory productCategory = new ProductCategory();
 		try{
 			String sql = "SELECT * FROM productcategory WHERE name='"+name+"'";
             ResultSet result = dbmanager.doQuery(sql);
 			while (result.next()) {
-				category = new ProductCategory(
+				productCategory = new ProductCategory(
 					result.getInt("productcategory_id"),
 					result.getString("name"),
 					result.getBoolean("isdeleted"));
@@ -143,6 +179,6 @@ public class QueryManager {
             System.err.println(DbManager.SQL_EXCEPTION + e.getMessage());
             e.printStackTrace(System.err);
         }
-		return category;
+		return productCategory;
 	}
 }

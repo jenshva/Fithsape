@@ -19,8 +19,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import main.Fitshape;
-import model.ProductCategory;
 import model.Product;
+import model.ProductCategory;
 
 /**
  *
@@ -42,7 +42,7 @@ public class ManageProduct  extends JPanel implements MouseListener, ActionListe
 	public ManageProduct(int id) {
 		super();
 		QueryManager queryManager = Fitshape.getQueryManager();
-		this.product = queryManager.getProduct(id);
+		this.product = queryManager.getProductById(id);
         setLayout(null);
         initComponents();
 	}
@@ -87,7 +87,7 @@ public class ManageProduct  extends JPanel implements MouseListener, ActionListe
 		}
 		QueryManager queryManager = Fitshape.getQueryManager();
 		List<ProductCategory> categories = new ArrayList();
-		categories = queryManager.getCategories();
+		categories = queryManager.getProductCategories();
 		for(int i=0;i<categories.size();i++){
 			cbProductCategoryName.addItem(categories.get(i));
 			if(categories.get(i).getId() == product.getProductCategoryId()){
@@ -177,7 +177,7 @@ public class ManageProduct  extends JPanel implements MouseListener, ActionListe
 			this.product.setName(tfProductName.getText());
 			this.product.setPrice(Double.parseDouble(tfPrice.getText()));
 			this.product.setTax(Integer.parseInt(tfTax.getText()));
-			ProductCategory category = queryManager.getCategoryByName(String.valueOf(cbProductCategoryName.getSelectedItem()));
+			ProductCategory category = queryManager.getProductCategoryByName(String.valueOf(cbProductCategoryName.getSelectedItem()));
 			this.product.setProductCategoryId(category.getId());
 			
 			if(newProduct){

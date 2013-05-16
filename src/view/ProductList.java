@@ -14,8 +14,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import main.Fitshape;
-import model.ProductCategory;
 import model.Product;
+import model.ProductCategory;
 
 /**
  *
@@ -26,21 +26,31 @@ public class ProductList extends JPanel implements MouseListener, ActionListener
     private final int offset = 40;	
 	private JLabel lblDot, lblProduct, lblPrice;
 	private JComboBox cbFilter;
-	private ProductCategory category;
+	private ProductCategory productCategory;
 	
+	/**
+	 * Loads the default product list
+	 */
     public ProductList() {
         super();
         setLayout(null);
         initComponents();
     }	
 	
-	public ProductList(ProductCategory category){
+	/**
+	 * Loads the product list with a ProductCategory filter applied.
+	 * @param category 
+	 */
+	public ProductList(ProductCategory productCategory){
 		super();
 		setLayout(null);
-		this.category = category;
+		this.productCategory = productCategory;
         initComponents();
 	}
 	
+	/**
+	 * Function to initialize all components
+	 */
 	private void initComponents() {
         addTitle();
 		addFilter();
@@ -48,6 +58,9 @@ public class ProductList extends JPanel implements MouseListener, ActionListener
 		addNewProductButton();
     }
 	
+	/**
+	 * Sets the screen title.
+	 */
     private void addTitle() {
         JLabel lblTitle = new JLabel();
         lblTitle.setText("Product overzicht");
@@ -56,6 +69,9 @@ public class ProductList extends JPanel implements MouseListener, ActionListener
         add(lblTitle);
     }
 	
+	/**
+	 * Adds a filter label with a drop down list.
+	 */
 	private void addFilter(){
 		JLabel lblTitle = new JLabel();
         lblTitle.setText("Filter:");
@@ -67,10 +83,10 @@ public class ProductList extends JPanel implements MouseListener, ActionListener
 		cbFilter.addItem("Alle producten");
 		QueryManager queryManager = Fitshape.getQueryManager();
 		List<ProductCategory> categories = new ArrayList();
-		categories = queryManager.getCategories();
+		categories = queryManager.getProductCategories();
 		for(int i=0;i<categories.size();i++){
 			cbFilter.addItem(categories.get(i));
-			if(category != null && categories.get(i).getId() == category.getId()){
+			if(productCategory != null && categories.get(i).getId() == productCategory.getId()){
 				cbFilter.setSelectedItem(categories.get(i));
 			}
 		}
@@ -81,13 +97,16 @@ public class ProductList extends JPanel implements MouseListener, ActionListener
         add(cbFilter);
 	}
 	
+	/**
+	 * Loads the product list
+	 */
 	private void addProductItems(){
 		QueryManager queryManager = Fitshape.getQueryManager();
 		List<Product> products;
-		if(category == null){
+		if(productCategory == null){
 			products = queryManager.getProducts();			
 		} else {
-			products = queryManager.getProductsByCategoryId(category.getId());
+			products = queryManager.getProductsByCategoryId(productCategory.getId());
 		}
 		
         for (int i = 0; i < products.size(); i++) {
@@ -114,6 +133,9 @@ public class ProductList extends JPanel implements MouseListener, ActionListener
         }
 	}
 	
+	/**
+	 * Add the add new product button.
+	 */
 	public void addNewProductButton(){
 		JButton btnAddProduct = new JButton("Nieuw product toevoegen");
         btnAddProduct.setBounds(180, 250, 150, 20);
@@ -122,6 +144,11 @@ public class ProductList extends JPanel implements MouseListener, ActionListener
         this.add(btnAddProduct);
 	}
 	
+	/**
+	 * The mouseClicked event on a product will direct the user toward the
+	 * ManageProduct view where a product can be modified or deleted.
+	 * @param event 
+	 */
 	@Override
     public void mouseClicked(MouseEvent event) {
         JLabel label = (JLabel) event.getSource();
@@ -150,12 +177,28 @@ public class ProductList extends JPanel implements MouseListener, ActionListener
         // Intentionally left blank.
     }
 
+	/**
+	 * Draws a line
+	 */
+	
     @Override
     public void paint(Graphics graphics) {
         super.paint(graphics);
         graphics.drawLine(20, 45, 540, 45);
     }
 
+	/**
+	 * The actionPerformed event can perform two separate actions.
+	 * Option 1 - e.getActionCommand = "Nieuw product toevoegen":
+	 * Occurs if the "Nieuw product toevoegen" button is pressed.
+	 * Loads the ManageProduct view without parameter to create a new product.
+	 * 
+	 * Option 2 - e.getActionCommand = "comboBoxChanged":
+	 * Occurs if the drop down list value is changed.
+	 * Load the ProductList view with a ProductCategory as parameter.
+	 * The product list will be filtered.
+	 * @param e 
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch(e.getActionCommand()){
@@ -165,12 +208,12 @@ public class ProductList extends JPanel implements MouseListener, ActionListener
 				break;
 			case "comboBoxChanged":
 				QueryManager queryManager = Fitshape.getQueryManager();
-				category = queryManager.getCategoryByName(String.valueOf(cbFilter.getSelectedItem()));
+				productCategory = queryManager.getProductCategoryByName(String.valueOf(cbFilter.getSelectedItem()));
 				ProductList productList;
-				if(category == null || category.getName() == null){
+				if(productCategory == null || productCategory.getName() == null){
 					productList = new ProductList();	
 				} else {
-					productList = new ProductList(category);			
+					productList = new ProductList(productCategory);			
 				}
 				Fitshape.getInstance().showPanel(productList);
 				break;
